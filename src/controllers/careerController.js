@@ -3,12 +3,28 @@ const { success, error } = require("../utils/response");
 
 exports.list = async (req, res) => {
   try {
-    const careers = await Career.findAll({
+    const { status, search, page = 1, limit = 2 } = req.body;
+    const where = {};
+    if (status !== undefined) {
+      where.status = status;
+    }
+    if (search) {
+      where.title = {
+        [require("sequelize").Op.like]: `%${search}%`,
+      };
+    }
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Career.findAndCountAll({
+      where,
       order: [["id", "DESC"]],
+      limit: parseInt(limit),
+      offset,
     });
     success(res, "Careers fetched successfully", {
-      count: careers.length,
-      careersList: careers,
+      totalCount: count,
+      careersList: rows,
+      page: parseInt(page),
+      limit: parseInt(limit),
     });
   } catch (err) {
     error(res, err.message);

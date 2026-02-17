@@ -44,7 +44,7 @@ exports.list = async (req, res) => {
       where.status = status;
     }
     if (search) {
-      where.title = {
+      where.key = {
         [require("sequelize").Op.like]: `%${search}%`,
       };
     }
