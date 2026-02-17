@@ -23,10 +23,28 @@ exports.update = async (req, res) => {
 
 exports.list = async (req, res) => {
   try {
-    const faqs = await Faq.findAll({ order: [["id", "DESC"]] });
+    const { status, search, page = 1, limit = 2 } = req.body;
+    const where = {};
+    if (status !== undefined) {
+      where.status = status;
+    }
+    if (search) {
+      where.question = {
+        [require("sequelize").Op.like]: `%${search}%`,
+      };
+    }
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Faq.findAndCountAll({
+      where,
+      order: [["id", "DESC"]],
+      limit: parseInt(limit),
+      offset,
+    });
     success(res, "Faq fetched successfully", {
-      count: faqs.length,
-      faqsList: faqs,
+      totalCount: count,
+      faqsList: rows,
+      page: parseInt(page),
+      limit: parseInt(limit),
     });
   } catch (err) {
     error(res, err.message);

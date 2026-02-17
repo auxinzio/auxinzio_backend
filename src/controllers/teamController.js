@@ -10,7 +10,7 @@ exports.list = async (req, res) => {
       where.status = status;
     }
     if (search) {
-      where.title = {
+      where.name = {
         [require("sequelize").Op.like]: `%${search}%`,
       };
     }

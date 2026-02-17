@@ -29,12 +29,28 @@ exports.update = async (req, res) => {
 
 exports.list = async (req, res) => {
   try {
-    const subscribers = await Subscriber.findAll({
+    const { status, search, page = 1, limit = 2 } = req.body;
+    const where = {};
+    if (status !== undefined) {
+      where.status = status;
+    }
+    if (search) {
+      where.email = {
+        [require("sequelize").Op.like]: `%${search}%`,
+      };
+    }
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Subscriber.findAndCountAll({
+      where,
       order: [["id", "DESC"]],
+      limit: parseInt(limit),
+      offset,
     });
     success(res, "Subscribers fetched successfully", {
-      count: subscribers.length,
-      subscribersList: subscribers,
+      totalCount: count,
+      subscribersList: rows,
+      page: parseInt(page),
+      limit: parseInt(limit),
     });
   } catch (err) {
     error(res, err.message);

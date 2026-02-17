@@ -65,12 +65,28 @@ exports.update = async (req, res) => {
 
 exports.list = async (req, res) => {
   try {
-    const feedbacks = await Feedback.findAll({
+    const { status, search, page = 1, limit = 2 } = req.body;
+    const where = {};
+    if (status !== undefined) {
+      where.status = status;
+    }
+    if (search) {
+      where.name = {
+        [require("sequelize").Op.like]: `%${search}%`,
+      };
+    }
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Feedback.findAndCountAll({
+      where,
       order: [["id", "DESC"]],
+      limit: parseInt(limit),
+      offset,
     });
-    success(res, "Feedbacks fetched successfully", {
-      count: feedbacks.length,
-      feedbacksList: feedbacks,
+    success(res, "Feedback fetched successfully", {
+      totalCount: count,
+      feedbacksList: rows,
+      page: parseInt(page),
+      limit: parseInt(limit),
     });
   } catch (err) {
     error(res, err.message);

@@ -64,7 +64,19 @@ exports.update = async (req, res) => {
 };
 exports.list = async (req, res) => {
   try {
-    const products = await Product.findAll({
+    const { status, search, page = 1, limit = 2 } = req.body;
+    const where = {};
+    if (status !== undefined) {
+      where.status = status;
+    }
+    if (search) {
+      where.product_name = {
+        [require("sequelize").Op.like]: `%${search}%`,
+      };
+    }
+    const offset = (page - 1) * limit;
+    const { rows, count } = await Product.findAndCountAll({
+      where,
       order: [["id", "DESC"]],
       include: [
         {
@@ -75,10 +87,14 @@ exports.list = async (req, res) => {
           order: [["id", "ASC"]],
         },
       ],
+      limit: parseInt(limit),
+      offset,
     });
     success(res, "Products fetched successfully", {
-      count: products.length,
-      productsList: products,
+      totalCount: count,
+      productsList: rows,
+      page: parseInt(page),
+      limit: parseInt(limit),
     });
   } catch (err) {
     error(res, err.message);
