@@ -21,7 +21,7 @@ const sequelize = new Sequelize(
   config.password,
   {
     ...config,
-    logging: false, // optional: reduce IIS noise
+    logging: false,
   },
 );
 
