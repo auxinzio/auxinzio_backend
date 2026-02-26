@@ -42,6 +42,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/faq', faqRoutes);
 
 app.use('/uploads', express.static('uploads'));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, () => {
   console.log("DB_HOST =", process.env.DB_HOST);
