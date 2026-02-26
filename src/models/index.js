@@ -5,16 +5,13 @@ const path = require("path");
 const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 
-const env = process.env.NODE_ENV || "development";
+const env = process.env.NODE_ENV || "production";
 const configFile = require(path.join(__dirname, "../config/config.js"));
 const config = configFile[env];
 
 if (!config) {
   throw new Error(`❌ Sequelize config missing for environment: ${env}`);
 }
-
-console.log("DB_HOST =", process.env.DB_HOST);
-console.log("DB_NAME =", process.env.DB_NAME);
 
 const db = {};
 

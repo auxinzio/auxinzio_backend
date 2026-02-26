@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
   console.log(`Server running on port ${PORT}`);
   res.send('auxinz Backend Running 🚀');
 });
@@ -38,9 +38,13 @@ app.use('/api/faq', faqRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("NODE_ENV =", process.env.NODE_ENV);
+  console.log("DB_HOST =", process.env.DB_HOST);
+  console.log("DB_USER =", process.env.DB_USER);
+  console.log("DB_PASS =", process.env.DB_PASS);
+  console.log("DB_NAME =", process.env.DB_NAME);
+  console.log("DB_PORT =", process.env.DB_PORT);
   console.log(`Server running on port ${PORT}`);
 });
 
