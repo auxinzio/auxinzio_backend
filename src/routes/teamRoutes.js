@@ -10,6 +10,7 @@ router.use(auth);
 
 router.post("/create", uploadTeamImage.single("image"), teamController.create);
 router.post("/update", uploadTeamImage.single("image"), teamController.update);
+router.post("/updateStatus", teamController.updateStatus);
 router.post("/", teamController.list);
 router.post("/show", teamController.get);
 router.post("/delete", teamController.remove);

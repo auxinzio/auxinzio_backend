@@ -140,6 +140,7 @@ exports.productsList = async (req, res) => {
         "id",
         "product_name",
         "category_name",
+        "description",
         "slug",
         "tag",
         "key_feature",
