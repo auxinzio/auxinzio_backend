@@ -106,6 +106,17 @@ exports.remove = async (req, res) => {
   }
 };
 
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const career = await Career.findByPk(req.body.id);
+    if (!career) return error(res, "Career Not Found", 404);
+    await career.update(data);
+    success(res, "Career Status Updated Successfully", { career });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 // Web Application
 exports.jobList = async (req, res) => {
   try {

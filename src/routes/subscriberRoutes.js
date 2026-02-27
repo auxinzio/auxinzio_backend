@@ -12,5 +12,6 @@ router.post("/", subscriberController.list);
 router.post("/show", subscriberController.get);
 router.post("/update", subscriberController.update);
 router.delete("/delete", subscriberController.remove);
+router.post("/updateStatus", subscriberController.updateStatus);
 
 module.exports = router;

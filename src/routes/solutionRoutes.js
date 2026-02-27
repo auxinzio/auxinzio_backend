@@ -29,5 +29,6 @@ router.post(
 router.post("/", solutionController.list);
 router.post("/show", solutionController.get);
 router.post("/delete", solutionController.remove);
+router.post("/updateStatus", solutionController.updateStatus);
 
 module.exports = router;

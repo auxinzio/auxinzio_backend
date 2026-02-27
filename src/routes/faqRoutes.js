@@ -9,5 +9,6 @@ router.post("/create", faqController.create);
 router.post("/update", faqController.update);
 router.post("/", faqController.list);
 router.post("/delete", faqController.remove);
+router.post("/updateStatus", faqController.updateStatus);
 
 module.exports = router;

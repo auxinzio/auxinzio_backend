@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
       data.sub_logo = `uploads/service/${req.files.sub_logo[0].filename}`;
     }
     const service = await Service.create(data);
-    success(res, "Service created successfully", { service }, 201);
+    success(res, "Service Created Successfully", { service }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -36,7 +36,7 @@ exports.update = async (req, res) => {
     const data = req.body;
 
     const service = await Service.findByPk(data.id);
-    if (!service) return error(res, "Service not found", 404);
+    if (!service) return error(res, "Service Not Found", 404);
 
     // 🔥 slug always from title (if title present)
     if (data.title) {
@@ -70,7 +70,7 @@ exports.update = async (req, res) => {
 
     await service.update(data);
 
-    success(res, "Service Updated successfully", {
+    success(res, "Service Updated Successfully", {
       service,
     });
   } catch (err) {
@@ -98,7 +98,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Services fetched successfully", {
+    success(res, "Services Fetched Successfully", {
       totalCount: count,
       serviceList: rows,
       page: parseInt(page),
@@ -112,8 +112,8 @@ exports.list = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const service = await Service.findByPk(req.body.id);
-    if (!service) return error(res, "Service not found", 404);
-    success(res, "Service fetched successfully", { service });
+    if (!service) return error(res, "Service Not Found", 404);
+    success(res, "Service Fetched Successfully", { service });
   } catch (err) {
     error(res, err.message);
   }
@@ -122,17 +122,27 @@ exports.get = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const service = await Service.findByPk(req.body.id);
-    if (!service) return error(res, "Service not found", 404);
+    if (!service) return error(res, "Service Not Found", 404);
     // delete images
     deleteImage("service", service.main_logo);
     deleteImage("service", service.sub_logo);
     await service.destroy(); // paranoid -> soft delete
-    success(res, "Service deleted successfully");
+    success(res, "Service Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }
 };
-
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const service = await Service.findByPk(req.body.id);
+    if (!service) return error(res, "Service Not Found", 404);
+    await service.update(data);
+    success(res, "Service Status Updated Successfully", { service });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 // Web Application
 exports.servicesList = async (req, res) => {
   try {
@@ -140,7 +150,7 @@ exports.servicesList = async (req, res) => {
       where: { status: true },
       order: [["id", "DESC"]],
     });
-    success(res, "Services fetched successfully", {
+    success(res, "Services Fetched Successfully", {
       totalCount: service.length,
       serviceList: service,
     });
@@ -157,8 +167,8 @@ exports.servicesShow = async (req, res) => {
         status: true,
       },
     });
-    if (!service) return error(res, "Service not found", 404);
-    success(res, "Service fetched successfully", { service });
+    if (!service) return error(res, "Service Not Found", 404);
+    success(res, "Service Fetched Successfully", { service });
   } catch (err) {
     error(res, err.message);
   }

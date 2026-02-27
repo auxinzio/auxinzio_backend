@@ -4,12 +4,15 @@ const { success, error } = require("../utils/response");
 exports.create = async (req, res) => {
   try {
     const data = req.body;
+    if (data.value && typeof data.value === "string") {
+      data.value = JSON.parse(data.value);
+    }
     const setting = await Setting.create({
       key: data.key,
-      value: data.value, // plain text
+      value: data.value,
       status: data.status,
     });
-    success(res, "Settings created successfully", { setting }, 201);
+    success(res, "Settings Created Successfully", { setting }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -19,16 +22,19 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.body;
     const data = req.body;
+    if (data.value && typeof data.value === "string") {
+      data.value = JSON.parse(data.value);
+    }
     const setting = await Setting.findByPk(id);
     if (!setting) {
-      return error(res, "Setting not found", 404);
+      return error(res, "Setting Not Found", 404);
     }
     await setting.update({
       key: data.key,
-      value: data.value, // plain text
+      value: data.value,
       status: data.status,
     });
-    success(res, "Setting Update successfully", {
+    success(res, "Setting Updated Successfully", {
       setting,
     });
   } catch (err) {
@@ -55,7 +61,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Setting fetched successfully", {
+    success(res, "Setting Fetched Successfully", {
       totalCount: count,
       settingsList: rows,
       page: parseInt(page),
@@ -70,9 +76,9 @@ exports.get = async (req, res) => {
   try {
     const setting = await Setting.findByPk(req.body.id);
     if (!setting) {
-      return error(res, "Settings not found", 404);
+      return error(res, "Settings Not Found", 404);
     }
-    success(res, "Setting fetched successfully", {
+    success(res, "Setting Fetched Successfully", {
       setting,
     });
   } catch (err) {
@@ -84,15 +90,25 @@ exports.remove = async (req, res) => {
   try {
     const setting = await Setting.findByPk(req.body.id);
     if (!setting) {
-      return error(res, "Settings not found", 404);
+      return error(res, "Settings Not Found", 404);
     }
     await setting.destroy();
-    success(res, "Settings deleted successfully");
+    success(res, "Settings Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }
 };
-
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const setting = await Setting.findByPk(req.body.id);
+    if (!setting) return error(res, "Setting Not Found", 404);
+    await setting.update(data);
+    success(res, "Setting Status Updated Successfully", { setting });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 // Web Application
 exports.settingsList = async (req, res) => {
   try {
@@ -113,7 +129,7 @@ exports.settingsList = async (req, res) => {
       }
     });
 
-    success(res, "Settings fetched successfully", formattedSettings);
+    success(res, "Settings Fetched Successfully", formattedSettings);
   } catch (err) {
     error(res, err.message);
   }
