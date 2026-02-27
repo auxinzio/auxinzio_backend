@@ -6,9 +6,9 @@ exports.create = async (req, res) => {
     const { email } = req.body;
     const exists = await Subscriber.findOne({ where: { email } });
     if (exists)
-      return res.status(409).json({ message: "Email already subscribed" });
+      return res.status(409).json({ message: "Email Already Subscribed" });
     const subscriber = await Subscriber.create({ email });
-    success(res, "subscriber created successfully", { subscriber }, 201);
+    success(res, "Subscriber Created Successfully", { subscriber }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -19,9 +19,9 @@ exports.update = async (req, res) => {
     const { id } = req.body;
     const { status } = req.body;
     const subscriber = await Subscriber.findByPk(id);
-    if (!subscriber) return error(res, "Subscriber not found", 404);
+    if (!subscriber) return error(res, "Subscriber Not Found", 404);
     await subscriber.update({ status });
-    success(res, "Subscriber Updated successfully", { subscriber }, 201);
+    success(res, "Subscriber Updated Successfully", { subscriber }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -46,7 +46,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Subscribers fetched successfully", {
+    success(res, "Subscribers Fetched Successfully", {
       totalCount: count,
       subscribersList: rows,
       page: parseInt(page),
@@ -60,8 +60,8 @@ exports.list = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const subscriber = await Subscriber.findByPk(req.body.id);
-    if (!subscriber) return error(res, "Subscriber not found", 404);
-    success(res, "Subscriber fetched successfully", { subscriber });
+    if (!subscriber) return error(res, "Subscriber Not Found", 404);
+    success(res, "Subscriber Fetched Successfully", { subscriber });
   } catch (err) {
     error(res, err.message);
   }
@@ -70,9 +70,20 @@ exports.get = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const subscriber = await Subscriber.findByPk(req.body.id);
-    if (!subscriber) return error(res, "Subscriber not found", 404);
+    if (!subscriber) return error(res, "Subscriber Not Found", 404);
     await subscriber.destroy(); // soft delete
-    success(res, "Subscriber deleted successfully");
+    success(res, "Subscriber Deleted Successfully");
+  } catch (err) {
+    error(res, err.message);
+  }
+};
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const subscriber = await Subscriber.findByPk(req.body.id);
+    if (!subscriber) return error(res, "Subscriber Not Found", 404);
+    await subscriber.update(data);
+    success(res, "Subscriber Status Updated Successfully", { subscriber });
   } catch (err) {
     error(res, err.message);
   }

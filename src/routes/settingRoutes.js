@@ -12,5 +12,6 @@ router.post("/update", settingController.update);
 router.post("/", settingController.list);
 router.post("/show", settingController.get);
 router.post("/delete", settingController.remove);
+router.post("/updateStatus", settingController.updateStatus);
 
 module.exports = router;

@@ -17,7 +17,7 @@ exports.submit = async (req, res) => {
     const data = req.body;
     if (req.file) data.image = req.file.filename;
     const feedback = await Feedback.create(data);
-    success(res, "Review submitted successfully", { feedback }, 201);
+    success(res, "Review Submitted Successfully", { feedback }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -29,7 +29,7 @@ exports.feedbackList = async (req, res) => {
     where: { status: true },
     order: [["id", "DESC"]],
   });
-  success(res, "Teams fetched successfully", {
+  success(res, "Feedback Fetched Successfully", {
     count: feedbacks.length,
     feedbacksList: feedbacks,
   });
@@ -41,7 +41,7 @@ exports.create = async (req, res) => {
     const data = req.body;
     if (req.file) data.image = req.file.filename;
     const feedback = await Feedback.create(data);
-    success(res, "Feedback created successfully", { feedback }, 201);
+    success(res, "Feedback Created Successfully", { feedback }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -51,13 +51,13 @@ exports.update = async (req, res) => {
   try {
     const data = req.body;
     const feedback = await Feedback.findByPk(data.id);
-    if (!feedback) return error(res, "Feedback not found", 404);
+    if (!feedback) return error(res, "Feedback Not Found", 404);
     if (req.file) {
       deleteImage(feedback.image);
       data.image = req.file.filename;
     }
     await feedback.update(data);
-    success(res, "Feedback Updated successfully", { feedback });
+    success(res, "Feedback Updated Successfully", { feedback });
   } catch (err) {
     error(res, err.message);
   }
@@ -82,7 +82,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Feedback fetched successfully", {
+    success(res, "Feedback Fetched Successfully", {
       totalCount: count,
       feedbacksList: rows,
       page: parseInt(page),
@@ -96,8 +96,8 @@ exports.list = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const feedback = await Feedback.findByPk(req.body.id);
-    if (!feedback) return error(res, "Feedback not found", 404);
-    success(res, "Feedback fetched successfully", { feedback });
+    if (!feedback) return error(res, "Feedback Not Found", 404);
+    success(res, "Feedback Fetched Successfully", { feedback });
   } catch (err) {
     error(res, err.message);
   }
@@ -108,9 +108,9 @@ exports.updateStatus = async (req, res) => {
     const { id } = req.body;
     const { status } = req.body;
     const feedback = await Feedback.findByPk(id);
-    if (!feedback) return error(res, "Feedback not found", 404);
+    if (!feedback) return error(res, "Feedback Not Found", 404);
     await feedback.update({ status });
-    success(res, "Feedback Updated successfully", { feedback });
+    success(res, "Feedback Updated Successfully", { feedback });
   } catch (err) {
     error(res, err.message);
   }
@@ -119,10 +119,10 @@ exports.updateStatus = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const feedback = await Feedback.findByPk(req.body.id);
-    if (!feedback) return error(res, "Feedback not found", 404);
+    if (!feedback) return error(res, "Feedback Not Found", 404);
     deleteImage(feedback.image);
     await feedback.destroy();
-    success(res, "Feedback deleted successfully");
+    success(res, "Feedback Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }

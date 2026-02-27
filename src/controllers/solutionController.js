@@ -34,7 +34,7 @@ exports.create = async (req, res) => {
       data.sub_logo = `uploads/solution/${req.files.sub_logo[0].filename}`;
     }
     const solution = await Solution.create(data);
-    success(res, "Solution created successfully", { solution }, 201);
+    success(res, "Solution Created Successfully", { solution }, 201);
   } catch (err) {
     console.log(err.errors || err);
     error(res, err.errors?.[0]?.message || err.message, 500);
@@ -46,7 +46,7 @@ exports.update = async (req, res) => {
     const data = req.body;
     const solution = await Solution.findByPk(id);
     if (!solution) {
-      return error(res, "Solution not found", 404);
+      return error(res, "Solution Not Found", 404);
     }
     // 🔥 slug from title (same logic as create)
     if (data.title) {
@@ -70,7 +70,7 @@ exports.update = async (req, res) => {
       data.sub_logo = `uploads/solution/${req.files.sub_logo[0].filename}`;
     }
     await solution.update(data);
-    success(res, "Solution updated successfully", { solution });
+    success(res, "Solution Updated Successfully", { solution });
   } catch (err) {
     error(res, err.message, 500);
   }
@@ -94,7 +94,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Solution fetched successfully", {
+    success(res, "Solution Fetched Successfully", {
       totalCount: count,
       solutionsList: rows,
       page: parseInt(page),
@@ -107,8 +107,8 @@ exports.list = async (req, res) => {
 exports.get = async (req, res) => {
   try {
     const solution = await Solution.findByPk(req.body.id);
-    if (!solution) return error(res, "Solution not found", 404);
-    success(res, "Solution fetched successfully", { solution });
+    if (!solution) return error(res, "Solution Not Found", 404);
+    success(res, "Solution Fetched Successfully", { solution });
   } catch (err) {
     error(res, err.message);
   }
@@ -116,18 +116,28 @@ exports.get = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const solution = await Solution.findByPk(req.body.id);
-    if (!solution) return error(res, "Solution not found", 404);
+    if (!solution) return error(res, "Solution Not Found", 404);
     // delete images
     deleteImage(solution.main_logo);
     deleteImage(solution.sub_logo);
     await solution.destroy(); // paranoid soft delete
     // res.json({ message: 'Solution deleted' });
-    success(res, "Solution deleted successfully");
+    success(res, "Solution Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }
 };
-
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const solution = await Solution.findByPk(req.body.id);
+    if (!solution) return error(res, "Solution Not Found", 404);
+    await solution.update(data);
+    success(res, "Solution Status Updated Successfully", { solution });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 // Web Application
 exports.solutionsList = async (req, res) => {
   try {
@@ -135,7 +145,7 @@ exports.solutionsList = async (req, res) => {
       where: { status: true },
       order: [["id", "DESC"]],
     });
-    success(res, "Solutions fetched successfully", {
+    success(res, "Solutions Fetched Successfully", {
       totalCount: solution.length,
       solutionsList: solution,
     });
@@ -152,8 +162,8 @@ exports.solutionsShow = async (req, res) => {
         status: true,
       },
     });
-    if (!solution) return error(res, "Solutions not found", 404);
-    success(res, "Solutions fetched successfully", { solution });
+    if (!solution) return error(res, "Solutions Not Found", 404);
+    success(res, "Solutions Fetched Successfully", { solution });
   } catch (err) {
     error(res, err.message);
   }

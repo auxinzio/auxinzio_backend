@@ -14,5 +14,6 @@ router.post("/", careerController.list);
 router.post("/show", careerController.get);
 router.post("/update", careerController.update);
 router.post("/delete", careerController.remove);
+router.post("/updateStatus", careerController.updateStatus);
 
 module.exports = router;

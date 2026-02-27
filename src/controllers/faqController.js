@@ -4,7 +4,7 @@ const { success, error } = require("../utils/response");
 exports.create = async (req, res) => {
   try {
     const faq = await Faq.create(req.body);
-    success(res, "Faq created successfully", { faq }, 201);
+    success(res, "Faq Created Successfully", { faq }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -13,14 +13,24 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const faq = await Faq.findByPk(req.body.id);
-    if (!faq) return error(res, "Faq not found", 404);
+    if (!faq) return error(res, "Faq Not Found", 404);
     await faq.update(req.body);
-    success(res, "Faq Updated successfully", { team });
+    success(res, "Faq Updated Successfully", { faq });
   } catch (err) {
     error(res, err.message);
   }
 };
-
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const faq = await Faq.findByPk(req.body.id);
+    if (!faq) return error(res, "Faq Not Found", 404);
+    await faq.update(data);
+    success(res, "Faq Status Updated Successfully", { faq });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 exports.list = async (req, res) => {
   try {
     const { status, search, page = 1, limit = 2 } = req.body;
@@ -40,7 +50,7 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Faq fetched successfully", {
+    success(res, "Faq Fetched Successfully", {
       totalCount: count,
       faqsList: rows,
       page: parseInt(page),
@@ -54,9 +64,9 @@ exports.list = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const faq = await Faq.findByPk(req.body.id);
-    if (!faq) return error(res, "Faq not found", 404);
+    if (!faq) return error(res, "Faq Not Found", 404);
     await faq.destroy();
-    success(res, "Faq deleted successfully");
+    success(res, "Faq Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }

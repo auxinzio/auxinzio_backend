@@ -27,7 +27,7 @@ exports.create = async (req, res) => {
     if (req.files?.logo)
       data.logo = `uploads/products/${req.files.logo[0].filename}`;
     const product = await Product.create(data);
-    success(res, "Product created successfully", { product }, 201);
+    success(res, "Product Created Successfully", { product }, 201);
   } catch (err) {
     error(res, err.message);
   }
@@ -37,7 +37,7 @@ exports.update = async (req, res) => {
     const { id } = req.body;
     const data = req.body;
     const product = await Product.findByPk(id);
-    if (!product) return error(res, "Product not found", 404);
+    if (!product) return error(res, "Product Not Found", 404);
     if (data.product_name)
       data.slug = data.product_name
         .toLowerCase()
@@ -57,7 +57,7 @@ exports.update = async (req, res) => {
       data.logo = `uploads/products/${req.files.logo[0].filename}`;
     }
     await product.update(data);
-    success(res, "Product Updated successfully", { product });
+    success(res, "Product Updated Successfully", { product });
   } catch (err) {
     error(res, err.message);
   }
@@ -83,14 +83,14 @@ exports.list = async (req, res) => {
           model: Faq,
           as: "faqs",
           where: { status: true },
-          required: false, // faq illatiyum product varanum
+          required: false,
           order: [["id", "ASC"]],
         },
       ],
       limit: parseInt(limit),
       offset,
     });
-    success(res, "Products fetched successfully", {
+    success(res, "Products Fetched Successfully", {
       totalCount: count,
       productsList: rows,
       page: parseInt(page),
@@ -112,8 +112,8 @@ exports.get = async (req, res) => {
         },
       ],
     });
-    if (!product) return error(res, "Product not found", 404);
-    success(res, "Products fetched successfully", { products });
+    if (!product) return error(res, "Product Not Found", 404);
+    success(res, "Products Fetched Successfully", { products });
   } catch (err) {
     error(res, err.message);
   }
@@ -121,11 +121,11 @@ exports.get = async (req, res) => {
 exports.remove = async (req, res) => {
   try {
     const product = await Product.findByPk(req.body.id);
-    if (!product) return error(res, "Product not found", 404);
+    if (!product) return error(res, "Product Not Found", 404);
     deleteImg("product", product.image);
     deleteImg("product", product.logo);
     await product.destroy();
-    success(res, "Product deleted successfully");
+    success(res, "Product Deleted Successfully");
   } catch (err) {
     error(res, err.message);
   }
@@ -158,7 +158,7 @@ exports.productsList = async (req, res) => {
         },
       ],
     });
-    success(res, "Products fetched successfully", {
+    success(res, "Products Fetched Successfully", {
       count: products.length,
       productsList: products,
     });
@@ -183,8 +183,8 @@ exports.productsShow = async (req, res) => {
         },
       ],
     });
-    if (!product) return error(res, "Product not found", 404);
-    success(res, "Products fetched successfully", { product });
+    if (!product) return error(res, "Product Not Found", 404);
+    success(res, "Products Fetched Successfully", { product });
   } catch (err) {
     error(res, err.message);
   }

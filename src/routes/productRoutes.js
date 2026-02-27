@@ -30,5 +30,6 @@ router.post(
 router.post("/", productController.list);
 router.post("/show", productController.get);
 router.post("/delete", productController.remove);
+router.post("/updateStatus", productController.updateStatus);
 
 module.exports = router;
