@@ -8,9 +8,12 @@ module.exports = (sequelize, DataTypes) => {
       email: DataTypes.STRING,
       phone: DataTypes.STRING,
       resume: DataTypes.STRING,
+      social_link: { type: DataTypes.JSON, allowNull: true },
+      cover_letter: { type: DataTypes.TEXT, allowNull: true },
+      designation: { type: DataTypes.STRING, allowNull: true },
       status: {
         type: DataTypes.STRING,
-        defaultValue: "pending", // pending | reviewed | rejected | selected
+        defaultValue: "pending",
       },
     },
     {
