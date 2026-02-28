@@ -6,14 +6,20 @@ const { sendMail } = require("../utils/mailer");
 // Web Application
 exports.submit = async (req, res) => {
   try {
-    const data = req.body;
+    const { applicant_name, email, phone, designation, cover_letter, social_link, ...rest } = req.body;
+
+    const data = {
+      applicant_name, email, phone, designation, cover_letter, social_link: social_link ? JSON.parse(social_link) : null, ...rest,
+    };
+
     if (req.file) {
       data.resume = `uploads/resume/${req.file.filename}`;
     }
+
     const application = await Application.create(data);
-    // 📧 Mail trigger
-    // 1️⃣ Send email to applicant
+
     sendApplicationEmails(application);
+
     success(res, "Application submitted successfully", { application }, 201);
   } catch (err) {
     error(res, err.message);
@@ -202,11 +208,11 @@ async function sendApplicationEmails(application) {
       `,
       attachments: application.resume
         ? [
-            {
-              filename: `${application.applicant_name}_Resume.pdf`,
-              path: application.resume, // local file path
-            },
-          ]
+          {
+            filename: `${application.applicant_name}_Resume.pdf`,
+            path: application.resume, // local file path
+          },
+        ]
         : [],
     });
     console.log("✅ Applicant & HR emails sent successfully");
