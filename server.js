@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+
 require('dotenv').config();
+
 const authRoutes = require('./src/routes/authRoutes');
 const teamRoutes = require('./src/routes/teamRoutes');
 const serviceRoutes = require('./src/routes/serviceRoutes');
@@ -21,9 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
 
-// app.get('/test', (req, res) => {
-//   res.send('auxinz Backend Running 🚀');
-// });
+app.get('/test', (req, res) => {
+  res.send('auxinz Backend Running 🚀');
+});
 
 app.get('/api/heartBeat', async (req, res) => {
   res.status(200).send('auxinz API working...!');
@@ -42,7 +44,6 @@ app.use('/api/products', productRoutes);
 app.use('/api/faq', faqRoutes);
 
 app.use('/uploads', express.static('uploads'));
-// app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.listen(PORT, () => {
   console.log("DB_HOST =", process.env.DB_HOST);
