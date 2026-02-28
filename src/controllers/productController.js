@@ -130,6 +130,17 @@ exports.remove = async (req, res) => {
     error(res, err.message);
   }
 };
+exports.updateStatus = async (req, res) => {
+  try {
+    const data = req.body;
+    const product = await Product.findByPk(req.body.id);
+    if (!product) return error(res, "Product Not Found", 404);
+    await product.update(data);
+    success(res, "Product Status Updated Successfully", { product });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
 // Web Application
 exports.productsList = async (req, res) => {
   try {
@@ -189,3 +200,4 @@ exports.productsShow = async (req, res) => {
     error(res, err.message);
   }
 };
+

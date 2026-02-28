@@ -126,7 +126,7 @@ exports.remove = async (req, res) => {
     // delete images
     deleteImage("service", service.main_logo);
     deleteImage("service", service.sub_logo);
-    await service.destroy(); // paranoid -> soft delete
+    await service.destroy();
     success(res, "Service Deleted Successfully");
   } catch (err) {
     error(res, err.message);
