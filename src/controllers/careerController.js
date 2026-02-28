@@ -120,7 +120,13 @@ exports.updateStatus = async (req, res) => {
 // Web Application
 exports.jobList = async (req, res) => {
   try {
+    const { department } = req.body;
+    let where = { status: true };
+    if (department && department !== "all") {
+      where.department = department;
+    }
     const careers = await Career.findAll({
+      where,
       order: [["id", "DESC"]],
     });
     success(res, "Careers fetched successfully", {

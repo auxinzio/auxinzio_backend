@@ -1,4 +1,4 @@
-const { Faq } = require("../models");
+const { Faq, Product } = require("../models");
 const { success, error } = require("../utils/response");
 
 exports.create = async (req, res) => {
@@ -46,13 +46,34 @@ exports.list = async (req, res) => {
     const offset = (page - 1) * limit;
     const { rows, count } = await Faq.findAndCountAll({
       where,
+      include: [
+        {
+          model: Product,
+          as: "product",
+          attributes: ["product_name"],
+        },
+      ],
       order: [["id", "DESC"]],
       limit: parseInt(limit),
       offset,
     });
+    const faqsList = rows.map((faq) => {
+      const item = faq.toJSON();
+      return {
+        id: item.id,
+        product_id: item.product_id,
+        product_name: item.product?.product_name || null,
+        question: item.question,
+        answer: item.answer,
+        status: item.status,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        deleted_at: item.deleted_at,
+      };
+    });
     success(res, "Faq Fetched Successfully", {
       totalCount: count,
-      faqsList: rows,
+      faqsList,
       page: parseInt(page),
       limit: parseInt(limit),
     });
