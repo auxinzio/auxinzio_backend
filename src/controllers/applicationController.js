@@ -74,7 +74,7 @@ exports.updateStatus = async (req, res) => {
       return error(res, "Applications not found", 404);
     }
     await application.update(data);
-    success(res, "Applications Status Updated successfully", { applications });
+    success(res, "Applications Status Updated successfully", { application });
   } catch (err) {
     error(res, err.message);
   }
