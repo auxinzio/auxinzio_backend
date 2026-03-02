@@ -14,6 +14,7 @@ const settingRoutes = require('./src/routes/settingRoutes');
 const feedbackRoutes = require('./src/routes/feedbackRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const faqRoutes = require('./src/routes/faqRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/faq', faqRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
