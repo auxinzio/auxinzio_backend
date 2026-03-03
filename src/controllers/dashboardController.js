@@ -19,7 +19,7 @@ exports.dashboard = async (req, res) => {
         const recentProducts = await Product.findAll({
             limit: 5,
             order: [["createdAt", "DESC"]],
-            attributes: ["product_name", "createdAt"],
+            attributes: ["product_name", "logo", "createdAt"],
         });
 
         const recentCareers = await Career.findAll({
@@ -42,6 +42,7 @@ exports.dashboard = async (req, res) => {
             })),
             recentProducts: recentProducts.map(Product => ({
                 message: Product.product_name,
+                logo: Product.logo,
                 time: Product.createdAt
             })),
             recentCareers: recentCareers.map(Career => ({

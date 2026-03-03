@@ -31,6 +31,11 @@ module.exports = (sequelize, DataTypes) => {
       as: "faqs", // 🔥 IMPORTANT
       onDelete: "CASCADE",
     });
+    Product.hasMany(models.Enquiry, {
+      foreignKey: "product_id",
+      as: "enquiries", // 🔥 IMPORTANT
+      onDelete: "CASCADE",
+    });
   };
 
   return Product;

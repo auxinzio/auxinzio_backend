@@ -16,7 +16,9 @@ const productRoutes = require('./src/routes/productRoutes');
 const faqRoutes = require('./src/routes/faqRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
 const chatBotRoutes = require('./src/routes/chatBotRoutes');
-const chatBotKnowledgeRoutes = require('./src/routes/chatBotKnowledgeRoutes');
+const chatRoutes = require('./src/routes/chatRoutes');
+const enquireRoutes = require('./src/routes/enquireRoutes');
+const contactRoutes = require('./src/routes/contactRoutes');
 
 const app = express();
 
@@ -47,7 +49,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/chatbot', chatBotRoutes);
-app.use('/api/chat', chatBotKnowledgeRoutes);
+app.use('/api/chat', chatRoutes);
+app.use('/api/enquire', enquireRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.use('/uploads', express.static('uploads'));
 

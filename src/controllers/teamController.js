@@ -21,9 +21,6 @@ exports.list = async (req, res) => {
       limit: parseInt(limit),
       offset,
     });
-    const teams = await Team.findAll({
-      order: [["id", "DESC"]],
-    });
     success(res, "Teams Fetched Successfully", {
       totalCount: count,
       teamsList: rows,
