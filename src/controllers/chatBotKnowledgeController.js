@@ -7,30 +7,50 @@ exports.create = async (req, res) => {
         const { question, answer, status } = req.body;
 
         if (!question || !answer) {
-            return error(res, "Question and answer are required", 400);
+            error(res, "Question and answer are required", 400);
         }
 
-        const newKnowledge = await ChatBotKnowledge.create({
+        const chat = await ChatBotKnowledge.create({
             question,
             answer,
             status: status !== undefined ? status : true
         });
 
-        return success(res, "Knowledge Entry Created Successfully", newKnowledge, 201);
-    } catch (error) {
-        console.error("Create Knowledge Error:", error);
-        return error(res, "Internal server error while creating knowledge Entry.", 500);
+        success(res, "Chatbot Knowledge Created Successfully", { chat }, 201);
+    } catch (err) {
+        console.error("Create Chatbot Knowledge Error:", err);
+        error(res, err.message);
     }
 };
 
-// Get all knowledge entries
 exports.list = async (req, res) => {
     try {
-        const knowledgeEntries = await ChatBotKnowledge.findAll();
-        return success(res, "Knowledge Entries Fetched Successfully", knowledgeEntries, 200);
-    } catch (error) {
-        console.error("Get Knowledge Error:", error);
-        return error(res, "Internal server error while fetching knowledge entries.", 500);
+        const { status, search, page = 1, limit = 2 } = req.body;
+        const where = {};
+        if (status !== undefined) {
+            where.status = status;
+        }
+        if (search) {
+            where.question = {
+                [require("sequelize").Op.like]: `%${search}%`,
+            };
+        }
+        const offset = (page - 1) * limit;
+        const { rows, count } = await ChatBotKnowledge.findAndCountAll({
+            where,
+            order: [["id", "DESC"]],
+            limit: parseInt(limit),
+            offset,
+        });
+        success(res, "Chatbot Knowledge Entries Fetched Successfully", {
+            totalCount: count,
+            chatList: rows,
+            page: parseInt(page),
+            limit: parseInt(limit),
+        });
+    } catch (err) {
+        console.error("Get Chatbot Knowledge Error:", err);
+        error(res, err.message);
     }
 };
 
@@ -38,16 +58,16 @@ exports.list = async (req, res) => {
 exports.show = async (req, res) => {
     try {
         const { id } = req.body;
-        const knowledge = await ChatBotKnowledge.findByPk(id);
+        const chat = await ChatBotKnowledge.findByPk(id);
 
-        if (!knowledge) {
-            return error(res, "Knowledge Entry Not Found", 404);
+        if (!chat) {
+            error(res, "Chatbot Knowledge Not Found", 404);
         }
 
-        return success(res, "Knowledge Entry Fetched Successfully", knowledge, 200);
-    } catch (error) {
-        console.error("Get Knowledge By ID Error:", error);
-        return error(res, "Internal server error while fetching the knowledge entry.", 500);
+        success(res, "Chatbot Knowledge Fetched Successfully", { chat }, 200);
+    } catch (err) {
+        console.error("Get Chatbot Knowledge By ID Error:", err);
+        error(res, err.message);
     }
 };
 
@@ -57,22 +77,22 @@ exports.update = async (req, res) => {
         const { id } = req.body;
         const { question, answer, status } = req.body;
 
-        const knowledge = await ChatBotKnowledge.findByPk(id);
+        const chat = await ChatBotKnowledge.findByPk(id);
 
-        if (!knowledge) {
-            return error(res, "Knowledge Entry Not Found", 404);
+        if (!chat) {
+            error(res, "Chatbot Knowledge Not Found", 404);
         }
 
-        await knowledge.update({
-            question: question !== undefined ? question : knowledge.question,
-            answer: answer !== undefined ? answer : knowledge.answer,
-            status: status !== undefined ? status : knowledge.status
+        await chat.update({
+            question: question !== undefined ? question : chat.question,
+            answer: answer !== undefined ? answer : chat.answer,
+            status: status !== undefined ? status : chat.status
         });
 
-        return success(res, "Knowledge Entry Updated Successfully", knowledge, 200);
-    } catch (error) {
-        console.error("Update Knowledge Error:", error);
-        return error(res, "Internal server error while updating the knowledge entry.", 500);
+        success(res, "Chatbot Knowledge Updated Successfully", { chat }, 200);
+    } catch (err) {
+        console.error("Update Chatbot Knowledge Error:", err);
+        error(res, err.message);
     }
 };
 
@@ -81,17 +101,17 @@ exports.delete = async (req, res) => {
     try {
         const { id } = req.body;
 
-        const knowledge = await ChatBotKnowledge.findByPk(id);
+        const chat = await ChatBotKnowledge.findByPk(id);
 
-        if (!knowledge) {
-            return error(res, "Knowledge Entry Not Found", 404);
+        if (!chat) {
+            error(res, "Chatbot Knowledge Not Found", 404);
         }
 
-        await knowledge.destroy();
+        await chat.destroy();
 
-        return success(res, "Knowledge Entry Deleted Successfully", {}, 200);
-    } catch (error) {
-        console.error("Delete Knowledge Error:", error);
-        return error(res, "Internal server error while deleting the knowledge entry.", 500);
+        success(res, "Chatbot Knowledge Deleted Successfully", {}, 200);
+    } catch (err) {
+        console.error("Delete Chatbot Knowledge Error:", err);
+        error(res, err.message);
     }
 };
