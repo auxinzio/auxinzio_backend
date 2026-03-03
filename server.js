@@ -15,6 +15,8 @@ const feedbackRoutes = require('./src/routes/feedbackRoutes');
 const productRoutes = require('./src/routes/productRoutes');
 const faqRoutes = require('./src/routes/faqRoutes');
 const dashboardRoutes = require('./src/routes/dashboardRoutes');
+const chatBotRoutes = require('./src/routes/chatBotRoutes');
+const chatBotKnowledgeRoutes = require('./src/routes/chatBotKnowledgeRoutes');
 
 const app = express();
 
@@ -44,6 +46,8 @@ app.use('/api/feedbacks', feedbackRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/faq', faqRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/chatbot', chatBotRoutes);
+app.use('/api/chatbot/knowledge', chatBotKnowledgeRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
