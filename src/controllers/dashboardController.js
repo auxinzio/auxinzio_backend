@@ -1,4 +1,4 @@
-const { Career, Application, Team, User, Service, Product } = require("../models");
+const { Career, Application, Team, User, Service, Product, Enquiry, Contact } = require("../models");
 const { success, error } = require("../utils/response");
 
 exports.dashboard = async (req, res) => {
@@ -13,7 +13,18 @@ exports.dashboard = async (req, res) => {
         const recentApplications = await Application.findAll({
             limit: 5,
             order: [["createdAt", "DESC"]],
-            attributes: ["applicant_name", "createdAt"],
+            attributes: ["applicant_name", "email", "createdAt"],
+        });
+
+        const recentEnquiries = await Enquiry.findAll({
+            limit: 5,
+            order: [["createdAt", "DESC"]],
+            attributes: ["name", "email", "company", "createdAt"],
+        });
+        const recentContacts = await Contact.findAll({
+            limit: 5,
+            order: [["createdAt", "DESC"]],
+            attributes: ["name", "email", "phone", "createdAt"],
         });
 
         const recentProducts = await Product.findAll({
@@ -37,8 +48,16 @@ exports.dashboard = async (req, res) => {
             solutionsCount: solutions,
             productsCount: products,
             recentApplications: recentApplications.map(Application => ({
-                message: `New application received: ${Application.applicant_name}`,
+                message: `New application received: ${Application.applicant_name} - ${Application.email}`,
                 time: Application.createdAt
+            })),
+            recentEnquiries: recentEnquiries.map(Enquiry => ({
+                message: `New enquiry received from ${Enquiry.company} by ${Enquiry.name} - ${Enquiry.email}`,
+                time: Enquiry.createdAt
+            })),
+            recentContacts: recentContacts.map(Contact => ({
+                message: `New contact received : ${Contact.name}`,
+                time: Contact.createdAt
             })),
             recentProducts: recentProducts.map(Product => ({
                 message: Product.product_name,
