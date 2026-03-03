@@ -6,7 +6,7 @@ exports.create = async (req, res) => {
     const { email } = req.body;
     const exists = await Subscriber.findOne({ where: { email } });
     if (exists)
-      return res.status(409).json({ message: "Email Already Subscribed" });
+      return error(res, "Email Already Subscribed", 409);
     const subscriber = await Subscriber.create({ email });
     success(res, "Subscriber Created Successfully", { subscriber }, 201);
   } catch (err) {

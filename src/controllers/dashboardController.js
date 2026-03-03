@@ -10,10 +10,22 @@ exports.dashboard = async (req, res) => {
         // Mocking monthly visits as there's no tracking table yet
         const monthlyVisits = "45.2k";
 
-        const recentActivity = await Application.findAll({
+        const recentApplications = await Application.findAll({
             limit: 5,
             order: [["createdAt", "DESC"]],
             attributes: ["applicant_name", "createdAt"],
+        });
+
+        const recentProducts = await Product.findAll({
+            limit: 5,
+            order: [["createdAt", "DESC"]],
+            attributes: ["product_name", "createdAt"],
+        });
+
+        const recentCareers = await Career.findAll({
+            limit: 5,
+            order: [["createdAt", "DESC"]],
+            attributes: ["title", "createdAt"],
         });
 
         // Keeping these for potential use
@@ -24,9 +36,17 @@ exports.dashboard = async (req, res) => {
         success(res, "Dashboard fetched successfully", {
             solutionsCount: solutions,
             productsCount: products,
-            recentActivity: recentActivity.map(Application => ({
+            recentApplications: recentApplications.map(Application => ({
                 message: `New application received: ${Application.applicant_name}`,
                 time: Application.createdAt
+            })),
+            recentProducts: recentProducts.map(Product => ({
+                message: Product.product_name,
+                time: Product.createdAt
+            })),
+            recentCareers: recentCareers.map(Career => ({
+                message: Career.title,
+                time: Career.createdAt
             })),
             stats: {
                 totalUsers,
