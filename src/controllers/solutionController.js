@@ -40,6 +40,7 @@ exports.create = async (req, res) => {
     error(res, err.errors?.[0]?.message || err.message, 500);
   }
 };
+
 exports.update = async (req, res) => {
   try {
     const { id } = req.body;
@@ -75,6 +76,7 @@ exports.update = async (req, res) => {
     error(res, err.message, 500);
   }
 };
+
 exports.list = async (req, res) => {
   try {
     const { status, search, page = 1, limit = 2 } = req.body;
@@ -104,6 +106,7 @@ exports.list = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.get = async (req, res) => {
   try {
     const solution = await Solution.findByPk(req.body.id);
@@ -113,6 +116,7 @@ exports.get = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.remove = async (req, res) => {
   try {
     const solution = await Solution.findByPk(req.body.id);
@@ -127,6 +131,7 @@ exports.remove = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.updateStatus = async (req, res) => {
   try {
     const data = req.body;

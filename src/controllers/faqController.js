@@ -20,6 +20,7 @@ exports.update = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.updateStatus = async (req, res) => {
   try {
     const data = req.body;
@@ -31,6 +32,7 @@ exports.updateStatus = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.list = async (req, res) => {
   try {
     const { status, search, page = 1, limit = 2 } = req.body;
