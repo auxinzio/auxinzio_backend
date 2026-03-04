@@ -4,9 +4,15 @@ const { success, error } = require("../utils/response");
 exports.submit = async (req, res) => {
   try {
     const { email } = req.body;
-    const exists = await Subscriber.findOne({ where: { email } });
-    if (exists)
+    const exists = await Subscriber.findOne({ where: { email }, paranoid: false });
+    if (exists) {
+      if (exists.deleted_at) {
+        await exists.restore();
+        await exists.update({ status: true });
+        return success(res, "Subscriber Subscribed Successfully", { subscriber: exists }, 201);
+      }
       return error(res, "Email Already Subscribed", 409);
+    }
     const subscriber = await Subscriber.create({ email });
     success(res, "Subscriber Subscribed Successfully", { subscriber }, 201);
   } catch (err) {
@@ -14,13 +20,18 @@ exports.submit = async (req, res) => {
   }
 };
 
-
 exports.create = async (req, res) => {
   try {
     const { email } = req.body;
-    const exists = await Subscriber.findOne({ where: { email } });
-    if (exists)
+    const exists = await Subscriber.findOne({ where: { email }, paranoid: false });
+    if (exists) {
+      if (exists.deleted_at) {
+        await exists.restore();
+        await exists.update({ status: true });
+        return success(res, "Subscriber Created Successfully", { subscriber: exists }, 201);
+      }
       return error(res, "Email Already Subscribed", 409);
+    }
     const subscriber = await Subscriber.create({ email });
     success(res, "Subscriber Created Successfully", { subscriber }, 201);
   } catch (err) {
@@ -85,7 +96,8 @@ exports.remove = async (req, res) => {
   try {
     const subscriber = await Subscriber.findByPk(req.body.id);
     if (!subscriber) return error(res, "Subscriber Not Found", 404);
-    await subscriber.destroy(); // soft delete
+    await subscriber.update({ status: false });
+    await subscriber.destroy();
     success(res, "Subscriber Deleted Successfully");
   } catch (err) {
     error(res, err.message);
