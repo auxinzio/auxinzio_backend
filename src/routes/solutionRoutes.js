@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const solutionController = require("../controllers/solutionController");
 const auth = require("../middlewares/authMiddleware");
-const { uploadServiceImage } = require("../utils/upload");
+const { uploadSolutionImage } = require("../utils/upload");
 
 router.post("/solutionsList", solutionController.solutionsList);
 router.post("/solutionsShow", solutionController.solutionsShow);
@@ -10,7 +10,7 @@ router.post("/solutionsShow", solutionController.solutionsShow);
 router.use(auth);
 router.post(
   "/create",
-  uploadServiceImage.fields([
+  uploadSolutionImage.fields([
     { name: "main_logo", maxCount: 1 },
     { name: "sub_logo", maxCount: 1 },
   ]),
@@ -19,7 +19,7 @@ router.post(
 
 router.post(
   "/update",
-  uploadServiceImage.fields([
+  uploadSolutionImage.fields([
     { name: "main_logo", maxCount: 1 },
     { name: "sub_logo", maxCount: 1 },
   ]),
