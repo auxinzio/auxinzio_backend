@@ -50,8 +50,8 @@ app.use('/api/faq', faqRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/chatbot', chatBotRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/enquire', enquireRoutes);
-app.use('/api/contact', contactRoutes);
+app.use('/api/enquiry', enquireRoutes);
+app.use('/api/contacts', contactRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
