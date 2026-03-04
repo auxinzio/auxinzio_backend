@@ -1,6 +1,20 @@
 const { Subscriber } = require("../models");
 const { success, error } = require("../utils/response");
 
+exports.submit = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const exists = await Subscriber.findOne({ where: { email } });
+    if (exists)
+      return error(res, "Email Already Subscribed", 409);
+    const subscriber = await Subscriber.create({ email });
+    success(res, "Subscriber Subscribed Successfully", { subscriber }, 201);
+  } catch (err) {
+    error(res, err.message);
+  }
+};
+
+
 exports.create = async (req, res) => {
   try {
     const { email } = req.body;
