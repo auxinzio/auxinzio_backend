@@ -63,12 +63,12 @@ exports.update = async (req, res) => {
     // replace main_logo
     if (req.files?.main_logo) {
       deleteImage(solution.main_logo);
-      data.main_logo = `uploads/solutions/${req.files.main_logo[0].filename}`;
+      data.main_logo = `uploads/solution/${req.files.main_logo[0].filename}`;
     }
     // replace sub_logo
     if (req.files?.sub_logo) {
       deleteImage(solution.sub_logo);
-      data.sub_logo = `uploads/solutions/${req.files.sub_logo[0].filename}`;
+      data.sub_logo = `uploads/solution/${req.files.sub_logo[0].filename}`;
     }
     await solution.update(data);
     success(res, "Solution Updated Successfully", { solution });
