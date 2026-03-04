@@ -1,4 +1,4 @@
-const { ChatBotKnowledge, Faq, Product, Solution, Sequelize } = require('../models');
+const { ChatBotKnowledge, Faq, Product, Solution, Sequelize, Team, Service } = require('../models');
 const { Op } = Sequelize;
 
 exports.getQueryResponse = async (req, res) => {
@@ -8,16 +8,8 @@ exports.getQueryResponse = async (req, res) => {
         if (!message) {
             return res.status(400).json({ error: "Message is required" });
         }
-
-        // Attempt to match keywords from the message
-        // A simple LIKE will match if the message contains words, but typically users type full sentences
-        // We can clean up the message by stripping common stop words if needed, or simply do a LIKE search.
-        // Assuming the user message might contain the exact question or significant keywords
         const searchString = `%${message}%`;
 
-        // Reverse logic: Check if any knowledge base question is contained within the user's message
-        // A more advanced approach would use FULLTEXT or NLP, but basic LIKE is a start.
-        // To support partial matches, let's split message into significant words (min 4 chars) and match them
         const words = message.split(/\s+/).filter(word => word.length > 3);
         const likeConditions = words.map(word => ({ [Op.like]: `%${word}%` }));
 
@@ -74,28 +66,11 @@ exports.getQueryResponse = async (req, res) => {
         }
 
         // 3. Check in Products (name or category)
-        let productMatch = null;
-        if (likeConditions.length > 0) {
-            productMatch = await Product.findOne({
-                where: {
-                    [Op.or]: [
-                        { product_name: { [Op.or]: likeConditions } },
-                        { category_name: { [Op.or]: likeConditions } }
-                    ],
-                    status: true
-                }
-            });
-        } else {
-            productMatch = await Product.findOne({
-                where: {
-                    [Op.or]: [
-                        { product_name: { [Op.like]: searchString } },
-                        { category_name: { [Op.like]: searchString } }
-                    ],
-                    status: true
-                }
-            });
-        }
+        // Bug fix: when using top-level [Op.or], wrap status inside [Op.and] to avoid Sequelize conflict
+        const productWhere = likeConditions.length > 0
+            ? { [Op.and]: [{ [Op.or]: [{ product_name: { [Op.or]: likeConditions } }, { category_name: { [Op.or]: likeConditions } }] }, { status: true }] }
+            : { [Op.and]: [{ [Op.or]: [{ product_name: { [Op.like]: searchString } }, { category_name: { [Op.like]: searchString } }] }, { status: true }] };
+        const productMatch = await Product.findOne({ where: productWhere });
 
         if (productMatch) {
             return res.status(200).json({
@@ -106,28 +81,10 @@ exports.getQueryResponse = async (req, res) => {
         }
 
         // 4. Check in Solutions
-        let solutionMatch = null;
-        if (likeConditions.length > 0) {
-            solutionMatch = await Solution.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.or]: likeConditions } },
-                        { title: { [Op.or]: likeConditions } }
-                    ],
-                    status: true
-                }
-            });
-        } else {
-            solutionMatch = await Solution.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.like]: searchString } },
-                        { title: { [Op.like]: searchString } }
-                    ],
-                    status: true
-                }
-            });
-        }
+        const solutionWhere = likeConditions.length > 0
+            ? { [Op.and]: [{ [Op.or]: [{ name: { [Op.or]: likeConditions } }, { title: { [Op.or]: likeConditions } }] }, { status: true }] }
+            : { [Op.and]: [{ [Op.or]: [{ name: { [Op.like]: searchString } }, { title: { [Op.like]: searchString } }] }, { status: true }] };
+        const solutionMatch = await Solution.findOne({ where: solutionWhere });
 
         if (solutionMatch) {
             return res.status(200).json({
@@ -138,28 +95,10 @@ exports.getQueryResponse = async (req, res) => {
         }
 
         // 5. Check in Services
-        let serviceMatch = null;
-        if (likeConditions.length > 0) {
-            serviceMatch = await Service.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.or]: likeConditions } },
-                        { title: { [Op.or]: likeConditions } }
-                    ],
-                    status: true
-                }
-            });
-        } else {
-            serviceMatch = await Service.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.like]: searchString } },
-                        { title: { [Op.like]: searchString } }
-                    ],
-                    status: true
-                }
-            });
-        }
+        const serviceWhere = likeConditions.length > 0
+            ? { [Op.and]: [{ [Op.or]: [{ name: { [Op.or]: likeConditions } }, { title: { [Op.or]: likeConditions } }] }, { status: true }] }
+            : { [Op.and]: [{ [Op.or]: [{ name: { [Op.like]: searchString } }, { title: { [Op.like]: searchString } }] }, { status: true }] };
+        const serviceMatch = await Service.findOne({ where: serviceWhere });
 
         if (serviceMatch) {
             return res.status(200).json({
@@ -170,34 +109,17 @@ exports.getQueryResponse = async (req, res) => {
         }
 
         // 6. Check in Teams
-        let teamMatch = null;
-        if (likeConditions.length > 0) {
-            teamMatch = await Team.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.or]: likeConditions } },
-                        { title: { [Op.or]: likeConditions } }
-                    ],
-                    status: true
-                }
-            });
-        } else {
-            teamMatch = await Team.findOne({
-                where: {
-                    [Op.or]: [
-                        { name: { [Op.like]: searchString } },
-                        { title: { [Op.like]: searchString } }
-                    ],
-                    status: true
-                }
-            });
-        }
+        const teamWhere = likeConditions.length > 0
+            ? { [Op.and]: [{ [Op.or]: [{ name: { [Op.or]: likeConditions } }, { designation: { [Op.or]: likeConditions } }] }, { status: true }] }
+            : { [Op.and]: [{ [Op.or]: [{ name: { [Op.like]: searchString } }, { designation: { [Op.like]: searchString } }] }, { status: true }] };
+        const teamMatches = await Team.findAll({ where: teamWhere });
 
-        if (teamMatch) {
+        if (teamMatches.length > 0) {
+            const memberList = teamMatches.map(m => `${m.name} (${m.designation})`).join(', ');
             return res.status(200).json({
-                answer: `We have a team member: ${teamMatch.title} (${teamMatch.name}). Please check our teams page for more details.`,
+                answer: `We have the following team member(s): ${memberList}. Please check our teams page for more details.`,
                 source: 'team',
-                data: teamMatch
+                data: teamMatches
             });
         }
 
