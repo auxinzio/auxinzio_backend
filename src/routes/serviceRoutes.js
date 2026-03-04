@@ -26,7 +26,7 @@ router.post(
 );
 router.post("/", serviceController.list);
 router.post("/show", serviceController.get);
-router.delete("/delete", serviceController.remove);
+router.post("/delete", serviceController.remove);
 router.post("/updateStatus", serviceController.updateStatus);
 
 module.exports = router;

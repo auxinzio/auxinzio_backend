@@ -14,5 +14,5 @@ router.use(auth);
 router.post("/", applicationController.list);
 router.post("/show", applicationController.get);
 router.post("/updateStatus", applicationController.updateStatus);
-router.delete("/delete", applicationController.remove);
+router.post("/delete", applicationController.remove);
 module.exports = router;
