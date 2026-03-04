@@ -4,9 +4,9 @@ const { success, error } = require("../utils/response");
 exports.create = async (req, res) => {
   try {
     const data = req.body;
-    if (data.value && typeof data.value === "string") {
-      data.value = JSON.parse(data.value);
-    }
+    // if (data.value && typeof data.value === "string") {
+    //   data.value = JSON.parse(data.value);
+    // }
     const setting = await Setting.create({
       key: data.key,
       value: data.value,
@@ -22,9 +22,9 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.body;
     const data = req.body;
-    if (data.value && typeof data.value === "string") {
-      data.value = JSON.parse(data.value);
-    }
+    // if (data.value && typeof data.value === "string") {
+    //   data.value = JSON.parse(data.value);
+    // }
     const setting = await Setting.findByPk(id);
     if (!setting) {
       return error(res, "Setting Not Found", 404);
