@@ -15,7 +15,9 @@ const deleteImage = (img) => {
 exports.submit = async (req, res) => {
   try {
     const data = req.body;
-    if (req.file) data.image = req.file.filename;
+    if (req.files?.image) {
+      data.image = `uploads/feedback/${req.files.image[0].filename}`;
+    }
     const feedback = await Feedback.create(data);
     success(res, "Review Submitted Successfully", { feedback }, 201);
   } catch (err) {
@@ -39,7 +41,9 @@ exports.feedbackList = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = req.body;
-    if (req.file) data.image = req.file.filename;
+    if (req.files?.image) {
+      data.image = `uploads/feedback/${req.files.image[0].filename}`;
+    }
     const feedback = await Feedback.create(data);
     success(res, "Feedback Created Successfully", { feedback }, 201);
   } catch (err) {
@@ -52,9 +56,9 @@ exports.update = async (req, res) => {
     const data = req.body;
     const feedback = await Feedback.findByPk(data.id);
     if (!feedback) return error(res, "Feedback Not Found", 404);
-    if (req.file) {
+    if (req.files?.image) {
       deleteImage(feedback.image);
-      data.image = req.file.filename;
+      data.image = `uploads/feedback/${req.files.image[0].filename}`;
     }
     await feedback.update(data);
     success(res, "Feedback Updated Successfully", { feedback });
