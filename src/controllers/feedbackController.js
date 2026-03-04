@@ -1,13 +1,7 @@
 const { Feedback } = require("../models");
 const { success, error } = require("../utils/response");
-const fs = require("fs");
-const path = require("path");
+const deleteImage = require("../utils/deleteImage");
 
-const deleteImage = (img) => {
-  if (!img) return;
-  const p = path.join(__dirname, "..", "uploads", "feedback", img);
-  if (fs.existsSync(p)) fs.unlinkSync(p);
-};
 
 /* ================= FRONTEND ================= */
 
@@ -15,8 +9,8 @@ const deleteImage = (img) => {
 exports.submit = async (req, res) => {
   try {
     const data = req.body;
-    if (req.files?.image) {
-      data.image = `uploads/feedback/${req.files.image[0].filename}`;
+    if (req.file) {
+      data.image = `uploads/feedback/${req.file.filename}`;
     }
     const feedback = await Feedback.create(data);
     success(res, "Review Submitted Successfully", { feedback }, 201);
@@ -41,8 +35,8 @@ exports.feedbackList = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = req.body;
-    if (req.files?.image) {
-      data.image = `uploads/feedback/${req.files.image[0].filename}`;
+    if (req.file) {
+      data.image = `uploads/feedback/${req.file.filename}`;
     }
     const feedback = await Feedback.create(data);
     success(res, "Feedback Created Successfully", { feedback }, 201);
@@ -56,9 +50,9 @@ exports.update = async (req, res) => {
     const data = req.body;
     const feedback = await Feedback.findByPk(data.id);
     if (!feedback) return error(res, "Feedback Not Found", 404);
-    if (req.files?.image) {
+    if (req.file) {
       deleteImage(feedback.image);
-      data.image = `uploads/feedback/${req.files.image[0].filename}`;
+      data.image = `uploads/feedback/${req.file.filename}`;
     }
     await feedback.update(data);
     success(res, "Feedback Updated Successfully", { feedback });
