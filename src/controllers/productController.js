@@ -43,7 +43,7 @@ exports.update = async (req, res) => {
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
-    ["tag", "key_feature", "description", "benefit"].forEach((f) => {
+    ["tag", "key_feature", "benefit"].forEach((f) => {
       if (data[f] && typeof data[f] === "string") {
         data[f] = JSON.parse(data[f]);
       }
