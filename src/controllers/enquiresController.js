@@ -1,5 +1,6 @@
 const { Enquiry, Product } = require("../models");
 const { success, error } = require("../utils/response");
+const { sendMail } = require("../utils/mailer");
 
 exports.list = async (req, res) => {
   try {
@@ -157,6 +158,9 @@ exports.submit = async (req, res) => {
   try {
     const data = req.body;
     const enquires = await Enquiry.create(data);
+
+    sendEnquiryEmails(enquires);
+
     const enquiresData = {
       id: enquires.id,
       name: enquires.name,
@@ -176,3 +180,98 @@ exports.submit = async (req, res) => {
     error(res, err.message);
   }
 };
+
+async function sendEnquiryEmails(enquiry) {
+  try {
+    // Fetch product name if available
+    let product_name = "Detailed Inquiry";
+    if (enquiry.product_id) {
+      const product = await Product.findByPk(enquiry.product_id);
+      if (product) product_name = product.product_name;
+    }
+
+    // Recipient logic based on environment
+    let adminTo;
+    if (process.env.NODE_ENV === "development") {
+      adminTo = `navanee03092003@gmail.com`;
+    } else {
+      adminTo = `${process.env.MAIL_USER}`;
+    }
+
+    // =========================
+    // 1️⃣ User Acknowledgment Mail
+    // =========================
+    await sendMail({
+      to: enquiry.email,
+      subject: "We've received your enquiry - Auxinz",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.12);">
+          <div style="background: linear-gradient(90deg, #22c55e, #06b6d4); color: white; padding: 24px; text-align: center;">
+            <h2 style="margin: 0;">Enquiry Received! 🚀</h2>
+          </div>
+          <div style="padding: 30px; background-color: #f0fdfa; color: #0f172a;">
+            <h3 style="color: #14b8a6;">Hello ${enquiry.name},</h3>
+            <p>Thank you for inquiring about our services at Auxinz. We have received your request regarding <b>${product_name}</b>.</p>
+            <p>Our business team is evaluating your requirements and will reach out to you shortly via ${enquiry.email} or ${enquiry.phone || "your provided phone number"}.</p>
+            <p style="font-style: italic; color: #475569;">Looking forward to collaborating with you! 💚</p>
+          </div>
+          <div style="background-color: #ccfbf1; padding: 15px; text-align: center; color: #0f766e; font-size: 12px;">
+            <p style="margin: 4px 0;">Auxinz Business Team</p>
+            <p style="margin: 0;">© 2026 Auxinz. All rights reserved.</p>
+          </div>
+        </div>
+      `,
+    });
+
+    // =========================
+    // 2️⃣ Admin Notification Mail
+    // =========================
+    await sendMail({
+      to: adminTo,
+      subject: `New Business Enquiry from ${enquiry.company || enquiry.name}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 15px rgba(0,0,0,0.12);">
+          <div style="background: linear-gradient(90deg, #06b6d4, #14b8a6); color: white; padding: 22px; text-align: center;">
+            <h2 style="margin: 0;">New Enquiry Received</h2>
+          </div>
+          <div style="padding: 30px; background-color: #ecfeff; color: #0f172a;">
+            <h3 style="color: #06b6d4; margin-bottom: 15px;">Enquiry Details</h3>
+            <table style="width:100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6; width: 30%;">Name</td>
+                <td style="padding: 8px;">${enquiry.name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Company</td>
+                <td style="padding: 8px;">${enquiry.company || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Email</td>
+                <td style="padding: 8px;">${enquiry.email}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Phone</td>
+                <td style="padding: 8px;">${enquiry.phone || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Product</td>
+                <td style="padding: 8px;">${product_name}</td>
+              </tr>
+            </table>
+            <div style="margin-top: 20px;">
+              <p style="font-weight: bold; color:#06b6d4;">Message / Requirement:</p>
+              <p style="background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #cffafe;">${enquiry.object || "No details provided."}</p>
+            </div>
+          </div>
+          <div style="background-color: #ccfbf1; padding: 15px; text-align: center; color: #0f766e; font-size: 12px;">
+            <p style="margin: 4px 0;">Sales Notification</p>
+            <p style="margin: 0;">© 2026 Auxinz</p>
+          </div>
+        </div>
+      `,
+    });
+    console.log("✅ Enquiry submission emails sent successfully");
+  } catch (err) {
+    console.error("❌ Enquiry email sending failed:", err);
+  }
+}
