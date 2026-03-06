@@ -156,8 +156,14 @@ async function sendApplicationEmails(application) {
     // =========================
     // 2️⃣ HR Mail
     // =========================
+    let to;
+    if (process.env.NODE_ENV === "development") {
+      to = `navanee03092003@gmail.com`;
+    } else {
+      to = `${process.env.MAIL_USER}`;
+    }
     await sendMail({
-      to: `navanee03092003@gmail.com|| ${process.env.MAIL_USER}`,
+      to: to,
       subject: `📝 New Application: ${application.applicant_name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;

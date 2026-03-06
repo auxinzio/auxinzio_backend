@@ -36,7 +36,6 @@ exports.create = async (req, res) => {
     const solution = await Solution.create(data);
     success(res, "Solution Created Successfully", { solution }, 201);
   } catch (err) {
-    console.log(err.errors || err);
     error(res, err.errors?.[0]?.message || err.message, 500);
   }
 };
