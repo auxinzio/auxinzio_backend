@@ -76,6 +76,7 @@ exports.list = async (req, res) => {
     success(res, "Faq Fetched Successfully", {
       totalCount: count,
       faqsList,
+      productsList: await Product.findAll({ where: { status: 1 }, attributes: ['id', "product_name"], order: [["id", "DESC"]] }),
       page: parseInt(page),
       limit: parseInt(limit),
     });
