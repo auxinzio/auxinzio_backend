@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const { success, error } = require("../utils/response");
 const { sendMail } = require("../utils/mailer");
+
 // Web Application
 exports.submit = async (req, res) => {
   try {
@@ -55,6 +56,7 @@ exports.list = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.get = async (req, res) => {
   try {
     const application = await Application.findByPk(req.body.id);
@@ -66,6 +68,7 @@ exports.get = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.updateStatus = async (req, res) => {
   try {
     const data = req.body;
@@ -79,6 +82,7 @@ exports.updateStatus = async (req, res) => {
     error(res, err.message);
   }
 };
+
 exports.remove = async (req, res) => {
   try {
     const application = await Application.findByPk(req.params.id);
@@ -101,6 +105,7 @@ exports.remove = async (req, res) => {
     error(res, err.message);
   }
 };
+
 async function sendApplicationEmails(application) {
   try {
     // =========================
@@ -152,7 +157,7 @@ async function sendApplicationEmails(application) {
     // 2️⃣ HR Mail
     // =========================
     await sendMail({
-      to: "navanee03092003@gmail.com",
+      to: `navanee03092003@gmail.com|| ${process.env.MAIL_USER}`,
       subject: `📝 New Application: ${application.applicant_name}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;
