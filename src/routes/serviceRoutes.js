@@ -3,6 +3,7 @@ const router = express.Router();
 const serviceController = require("../controllers/serviceController");
 const auth = require("../middlewares/authMiddleware");
 const { uploadServiceImage } = require("../utils/upload");
+const convertToWebp = require("../middlewares/webpConverter");
 
 router.post("/servicesList", serviceController.servicesList);
 router.post("/servicesShow", serviceController.servicesShow);
@@ -14,6 +15,7 @@ router.post(
     { name: "main_logo", maxCount: 1 },
     { name: "sub_logo", maxCount: 1 },
   ]),
+  convertToWebp("service"),
   serviceController.create,
 );
 router.post(
@@ -22,6 +24,7 @@ router.post(
     { name: "main_logo", maxCount: 1 },
     { name: "sub_logo", maxCount: 1 },
   ]),
+  convertToWebp("service"),
   serviceController.update,
 );
 router.post("/", serviceController.list);

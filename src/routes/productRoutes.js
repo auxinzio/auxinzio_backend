@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 const auth = require("../middlewares/authMiddleware");
 const { uploadProductImage } = require("../utils/upload");
+const convertToWebp = require("../middlewares/webpConverter");
 
 router.post("/productsList", productController.productsList);
 router.post("/productsShow", productController.productsShow);
@@ -15,6 +16,7 @@ router.post(
     { name: "image", maxCount: 1 },
     { name: "logo", maxCount: 1 },
   ]),
+  convertToWebp("products"),
   productController.create,
 );
 
@@ -24,6 +26,7 @@ router.post(
     { name: "image", maxCount: 1 },
     { name: "logo", maxCount: 1 },
   ]),
+  convertToWebp("products"),
   productController.update,
 );
 

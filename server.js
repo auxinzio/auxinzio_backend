@@ -19,6 +19,7 @@ const chatBotRoutes = require('./src/routes/chatBotRoutes');
 const chatRoutes = require('./src/routes/chatRoutes');
 const enquireRoutes = require('./src/routes/enquireRoutes');
 const contactRoutes = require('./src/routes/contactRoutes');
+const clientsRoutes = require('./src/routes/clientsRoutes');
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use('/api/chatbot', chatBotRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/enquiry', enquireRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/clients', clientsRoutes);
 
 app.use('/uploads', express.static('uploads'));
 
