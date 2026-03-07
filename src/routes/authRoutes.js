@@ -4,6 +4,7 @@ const authController = require("../controllers/authController");
 const auth = require("../middlewares/authMiddleware");
 
 router.post("/login", authController.login);
+router.post("/verifymfa", authController.verifyMFA);
 
 router.use(auth);
 

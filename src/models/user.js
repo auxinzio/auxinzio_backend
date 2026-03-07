@@ -8,6 +8,9 @@ module.exports = (sequelize, DataTypes) => {
       password: DataTypes.STRING,
       role: DataTypes.STRING,
       status: DataTypes.BOOLEAN,
+      mfa_user_code: DataTypes.STRING,
+      mfa_admin_code: DataTypes.STRING,
+      mfa_expires_at: DataTypes.DATE,
     },
     {
       tableName: "users",
