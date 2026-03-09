@@ -31,7 +31,7 @@ exports.list = async (req, res) => {
 
     success(res, "Users Fetched Successfully", {
       totalCount: count,
-      userList: rows,
+      usersList: rows,
       page: parseInt(page),
       limit: parseInt(limit),
     });
