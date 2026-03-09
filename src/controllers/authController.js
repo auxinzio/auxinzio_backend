@@ -38,6 +38,7 @@ exports.login = async (req, res) => {
 
     // Send Mail to User
     await sendMail({
+      from: '"Auxinz Team" <support@auxinz.io>',
       to: user.email,
       subject: "Login Verification Code",
       html: `<p>Your secure login code is: <b>${userCode}</b></p>`,
@@ -46,6 +47,7 @@ exports.login = async (req, res) => {
     // Send Mail to Admin (configured in .env)
     const adminEmail = 'navanee03092003@gmail.com' || process.env.MAIL_USER;
     await sendMail({
+      from: '"Auxinz Team" <support@auxinz.io>',
       to: adminEmail,
       subject: "Admin Security Verification Code",
       html: `<p>Security verification code for user <b>${user.email}</b> login: <b>${adminCode}</b></p>`,

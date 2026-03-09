@@ -112,6 +112,7 @@ async function sendApplicationEmails(application) {
     // 1️⃣ Applicant Mail
     // =========================
     await sendMail({
+      from: '"Careers Team" <support@auxinz.io>',
       to: application.email,
       subject: "🎉 Your Application Has Been Received!",
       text: `Hello ${application.applicant_name}, Thank you for applying. Our HR team will review your application.`,
@@ -163,6 +164,7 @@ async function sendApplicationEmails(application) {
       to = `${process.env.MAIL_USER}`;
     }
     await sendMail({
+      from: `"Application" <${application.email}>`,
       to: to,
       subject: `📝 New Application: ${application.applicant_name}`,
       html: `

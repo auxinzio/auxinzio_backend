@@ -13,9 +13,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-exports.sendMail = async ({ to, subject, html }) => {
+exports.sendMail = async ({ from, to, subject, html }) => {
   await transporter.sendMail({
-    from: '"Careers Team" <support@auxinz.io>',
+    from,
     to,
     subject,
     html,

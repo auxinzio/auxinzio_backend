@@ -202,6 +202,7 @@ async function sendEnquiryEmails(enquiry) {
     // 1️⃣ User Acknowledgment Mail
     // =========================
     await sendMail({
+      from: '"Support Team" <support@auxinz.io>',
       to: enquiry.email,
       subject: "We've received your enquiry - Auxinz",
       html: `
@@ -227,6 +228,7 @@ async function sendEnquiryEmails(enquiry) {
     // 2️⃣ Admin Notification Mail
     // =========================
     await sendMail({
+      from: '"Support Team" <support@auxinz.io>',
       to: adminTo,
       subject: `New Business Enquiry from ${enquiry.company || enquiry.name}`,
       html: `

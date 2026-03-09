@@ -111,6 +111,7 @@ async function sendContactEmails(contact) {
     // 1️⃣ User Acknowledgment Mail
     // =========================
     await sendMail({
+      from: `"Support Team" <${contact.email}>`,
       to: contact.email,
       subject: "Thank you for contacting Auxinz!",
       html: `
@@ -142,6 +143,7 @@ async function sendContactEmails(contact) {
       to = `${process.env.MAIL_USER}`;
     }
     await sendMail({
+      from: `"Support Team" <${contact.email}>`,
       to: to,
       subject: `New Contact Submission: ${contact.name}`,
       html: `
