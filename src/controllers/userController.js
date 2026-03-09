@@ -137,3 +137,14 @@ exports.updateStatus = async (req, res) => {
     error(res, err.message);
   }
 };
+
+exports.remove = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.body.id);
+    if (!user) return error(res, "User Not Found", 404);
+    await user.destroy();
+    success(res, "User Deleted Successfully");
+  } catch (err) {
+    error(res, err.message);
+  }
+};

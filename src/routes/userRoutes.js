@@ -11,5 +11,6 @@ router.post("/show", userController.get);
 router.post("/create", userController.create);
 router.post("/update", userController.update);
 router.post("/updateStatus", userController.updateStatus);
+router.post("/delete", userController.remove);
 
 module.exports = router;
