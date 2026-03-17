@@ -55,7 +55,7 @@ exports.get = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, is_mfa_enabled } = req.body;
 
     if (!name || !email || !password) {
       return error(res, "Name, email and password are required");
@@ -75,6 +75,7 @@ exports.create = async (req, res) => {
       password: hashedPassword,
       role: role || "admin",
       status: true,
+      is_mfa_enabled: is_mfa_enabled !== undefined ? is_mfa_enabled : true,
     });
 
     // Send Mail with credentials
@@ -102,7 +103,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const { id, name, email, role } = req.body;
+    const { id, name, email, role, is_mfa_enabled } = req.body;
 
     const user = await User.findByPk(id);
     if (!user) return error(res, "User Not Found", 404);
@@ -114,7 +115,7 @@ exports.update = async (req, res) => {
       }
     }
 
-    await user.update({ name, email, role });
+    await user.update({ name, email, role, is_mfa_enabled });
 
     const userResponse = user.toJSON();
     delete userResponse.password;
@@ -133,6 +134,19 @@ exports.updateStatus = async (req, res) => {
 
     await user.update({ status: status });
     success(res, "User Status Updated Successfully", { user });
+  } catch (err) {
+    error(res, err.message);
+  }
+};
+
+exports.updateMFAStatus = async (req, res) => {
+  try {
+    const { id, is_mfa_enabled } = req.body;
+    const user = await User.findByPk(id);
+    if (!user) return error(res, "User Not Found", 404);
+
+    await user.update({ is_mfa_enabled: is_mfa_enabled });
+    success(res, "User MFA Status Updated Successfully", { user });
   } catch (err) {
     error(res, err.message);
   }
