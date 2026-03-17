@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       mfa_user_code: DataTypes.STRING,
       mfa_admin_code: DataTypes.STRING,
       mfa_expires_at: DataTypes.DATE,
+      is_mfa_enabled: DataTypes.BOOLEAN,
     },
     {
       tableName: "users",

@@ -25,6 +25,25 @@ exports.login = async (req, res) => {
       return error(res, "Invalid credentials");
     }
 
+    if (!user.is_mfa_enabled) {
+      const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" },
+      );
+
+      const userResponse = user.toJSON();
+      delete userResponse.password;
+      delete userResponse.mfa_user_code;
+      delete userResponse.mfa_admin_code;
+      delete userResponse.mfa_expires_at;
+
+      return success(res, "Login successful", {
+        token: token,
+        user: userResponse,
+      });
+    }
+
     // Generate two 6-digit codes
     const userCode = crypto.randomInt(100000, 999999).toString();
     const adminCode = crypto.randomInt(100000, 999999).toString();
@@ -45,7 +64,7 @@ exports.login = async (req, res) => {
     });
 
     // Send Mail to Admin (configured in .env)
-    const adminEmail = 'navanee03092003@gmail.com' || process.env.MAIL_USER;
+    const adminEmail = "navanee03092003@gmail.com" || process.env.MAIL_USER;
     await sendMail({
       from: '"Auxinz Team" <support@auxinz.io>',
       to: adminEmail,
