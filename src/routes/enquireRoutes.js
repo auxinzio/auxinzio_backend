@@ -4,6 +4,7 @@ const enquiresController = require("../controllers/enquiresController");
 const auth = require("../middlewares/authMiddleware");
 
 router.post("/submit", enquiresController.submit);
+router.get("/demo/:token", enquiresController.getDemo);
 
 router.use(auth);
 

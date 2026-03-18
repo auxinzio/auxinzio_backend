@@ -1,6 +1,7 @@
 const { Enquiry, Product } = require("../models");
 const { success, error } = require("../utils/response");
 const { sendMail } = require("../utils/mailer");
+const crypto = require("crypto");
 
 exports.list = async (req, res) => {
   try {
@@ -39,6 +40,10 @@ exports.list = async (req, res) => {
         object: item.object,
         product_id: item.product_id,
         product_name: item.product?.product_name || null,
+        reason: item.reason,
+        demo_url: item.demo_url,
+        expiry_at: item.expiry_at,
+        access_token: item.access_token,
         status: item.status,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
@@ -97,6 +102,15 @@ exports.get = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const data = req.body;
+    // Demo Link Logic
+    if (data.product_id) {
+      const product = await Product.findByPk(data.product_id);
+      if (product && product.product_url) {
+        data.demo_url = product.product_url;
+        data.access_token = crypto.randomBytes(16).toString("hex");
+        data.expiry_at = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours expiry
+      }
+    }
     const enquires = await Enquiry.create(data);
     const enquiresData = {
       id: enquires.id,
@@ -107,6 +121,10 @@ exports.create = async (req, res) => {
       object: enquires.object,
       product_id: enquires.product_id,
       product_name: enquires.product?.product_name || null,
+      reason: enquires.reason,
+      demo_url: enquires.demo_url,
+      expiry_at: enquires.expiry_at,
+      access_token: enquires.access_token,
       status: enquires.status,
       createdAt: enquires.createdAt,
       updatedAt: enquires.updatedAt,
@@ -121,6 +139,15 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const data = req.body;
+    // Demo Link Logic
+    if (data.product_id) {
+      const product = await Product.findByPk(data.product_id);
+      if (product && product.product_url) {
+        data.demo_url = product.product_url;
+        data.access_token = crypto.randomBytes(16).toString("hex");
+        data.expiry_at = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours expiry
+      }
+    }
     const enquires = await Enquiry.findByPk(req.body.id);
     if (!enquires) return error(res, "Enquires Not Found", 404);
     await enquires.update(data);
@@ -157,6 +184,18 @@ exports.remove = async (req, res) => {
 exports.submit = async (req, res) => {
   try {
     const data = req.body;
+
+    // Demo Link Logic
+    if (data.product_id) {
+      const product = await Product.findByPk(data.product_id);
+      if (product && product.product_url) {
+        data.demo_url = product.product_url;
+        data.access_token = crypto.randomBytes(16).toString("hex");
+        // data.expiry_at = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours expiry
+        data.expiry_at = new Date(Date.now() + 1 * 60 * 1000);
+      }
+    }
+
     const enquires = await Enquiry.create(data);
 
     sendEnquiryEmails(enquires);
@@ -168,8 +207,12 @@ exports.submit = async (req, res) => {
       phone: enquires.phone,
       company: enquires.company,
       object: enquires.object,
+      reason: enquires.reason,
       product_id: enquires.product_id,
       product_name: enquires.product?.product_name || null,
+      demo_url: enquires.demo_url,
+      expiry_at: enquires.expiry_at,
+      access_token: enquires.access_token,
       status: enquires.status,
       createdAt: enquires.createdAt,
       updatedAt: enquires.updatedAt,
@@ -178,6 +221,48 @@ exports.submit = async (req, res) => {
     success(res, "Enquires Submitted Successfully", { enquiresData });
   } catch (err) {
     error(res, err.message);
+  }
+};
+
+exports.getDemo = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const enquiry = await Enquiry.findOne({ where: { access_token: token } });
+
+    if (!enquiry) {
+      return res.status(404).send(`
+        <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h1 style="color: #ef4444;">Invalid Demo Link</h1>
+          <p>We couldn't find a demo associated with this link.</p>
+          <a href="https://auxinz.io" style="color: #06b6d4;">Return to Home</a>
+        </div>
+      `);
+    }
+
+    if (new Date() > new Date(enquiry.expiry_at)) {
+      return res.status(410).send(`
+        <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h1 style="color: #f59e0b;">Demo Link Expired</h1>
+          <p>This demo link has expired. Please submit a new enquiry if you still need access.</p>
+          <a href="https://auxinz.io" style="color: #06b6d4;">Contact Support</a>
+        </div>
+      `);
+    }
+
+    if (!enquiry.demo_url) {
+      return res.status(404).send(`
+        <div style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h1 style="color: #ef4444;">Demo Not Found</h1>
+          <p>No demo URL is associated with this enquiry.</p>
+          <a href="https://auxinz.io" style="color: #06b6d4;">Return to Home</a>
+        </div>
+      `);
+    }
+
+    // Redirect to the actual demo URL
+    res.redirect(enquiry.demo_url);
+  } catch (err) {
+    res.status(500).send("An error occurred while processing your request.");
   }
 };
 
@@ -214,6 +299,7 @@ async function sendEnquiryEmails(enquiry) {
             <h3 style="color: #14b8a6;">Hello ${enquiry.name},</h3>
             <p>Thank you for inquiring about our services at Auxinz. We have received your request regarding <b>${product_name}</b>.</p>
             <p>Our business team is evaluating your requirements and will reach out to you shortly via ${enquiry.email} or ${enquiry.phone || "your provided phone number"}.</p>
+            <p>You can access the demo at <a href="${enquiry.demo_url}">${enquiry.demo_url}</a></p>
             <p style="font-style: italic; color: #475569;">Looking forward to collaborating with you! 💚</p>
           </div>
           <div style="background-color: #ccfbf1; padding: 15px; text-align: center; color: #0f766e; font-size: 12px;">
@@ -258,6 +344,22 @@ async function sendEnquiryEmails(enquiry) {
               <tr>
                 <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Product</td>
                 <td style="padding: 8px;">${product_name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Reason</td>
+                <td style="padding: 8px;">${enquiry.reason || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Demo URL</td>
+                <td style="padding: 8px;">${enquiry.demo_url || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Expiry Date</td>
+                <td style="padding: 8px;">${enquiry.expiry_at || "N/A"}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px; font-weight: bold; color:#14b8a6;">Access Token</td>
+                <td style="padding: 8px;">${enquiry.access_token || "N/A"}</td>
               </tr>
             </table>
             <div style="margin-top: 20px;">
