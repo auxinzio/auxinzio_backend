@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
       phone: { type: DataTypes.STRING },
       product_id: { type: DataTypes.INTEGER },
       object: { type: DataTypes.TEXT },
+      reason: { type: DataTypes.TEXT },
+      demo_url: { type: DataTypes.STRING },
+      expiry_at: { type: DataTypes.DATE },
+      access_token: { type: DataTypes.STRING, unique: true },
       status: { type: DataTypes.BOOLEAN },
     },
     {

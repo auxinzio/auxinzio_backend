@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },
+      product_url: { type: DataTypes.STRING },
     },
     {
       tableName: "products",
